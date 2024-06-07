@@ -17,7 +17,7 @@ function fillScene() {
 
     // Triangle Mesh
     var material, geometry, mesh;
-    material = new THREE.MeshBasicMaterial( { vertexColors: true} );
+    material = new THREE.MeshBasicMaterial( { vertexColors: true, side : THREE.DoubleSide} );
     geometry = new THREE.BufferGeometry();
 
     var vertices = new Float32Array([
@@ -36,7 +36,7 @@ function fillScene() {
 
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
 
-    geometry.setIndex([0, 1, 2]); // Définit les indices des sommets pour la face du triangle
+    geometry.setIndex([0, 1, 2]); 
 
     mesh = new THREE.Mesh(geometry, material);
 

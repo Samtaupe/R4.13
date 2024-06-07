@@ -22,6 +22,7 @@ import * as THREE from 'three';
 
 import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import {dat} from './lib/dat.gui.min.js';
 
 
 var camera, scene, renderer;
@@ -57,6 +58,7 @@ function init() {
 	cameraControls.target.set(4,301,92);
 
 	fillScene();
+	
 }
 
 // Supporting frame for the bird - base + legs + feet
@@ -67,67 +69,82 @@ function createSupport() {
 	var cube;
 	cube = new THREE.Mesh(
 		new THREE.BoxGeometry( 20+64+110, 4, 2*77 ), cubeMaterial );
-	cube.position.x = -45;	// (20+32) - half of width (20+64+110)/2
-	cube.position.y = 4/2;	// half of height
-	cube.position.z = 0;	// centered at origin
+	cube.position.x = -45;
+	cube.position.y = 4/2;	
+	cube.position.z = 0;	
 	scene.add( cube );
 
 	// left foot
 	cube = new THREE.Mesh(
 		new THREE.BoxGeometry( 20+64+110, 52, 6 ), cubeMaterial );
-	cube.position.x = -45;	// (20+32) - half of width (20+64+110)/2
-	cube.position.y = 52/2;	// half of height
-	cube.position.z = 77 + 6/2;	// offset 77 + half of depth 6/2
+	cube.position.x = -45;	
+	cube.position.y = 52/2;	
+	cube.position.z = 77 + 6/2;	
 	scene.add( cube );
 
 	// left leg
 	cube = new THREE.Mesh(
 		new THREE.BoxGeometry( 64, 334+52, 6 ), cubeMaterial );
-	cube.position.x = 0;	// centered on origin along X
+	cube.position.x = 0;	
 	cube.position.y = (334+52)/2;
 	cube.position.z = 77 + 6/2;	// offset 77 + half of depth 6/2
 	scene.add( cube );
 
 	// right foot
-
+	cube = new THREE.Mesh(
+		new THREE.BoxGeometry( 20+64+110, 52, 6 ), cubeMaterial );
+	cube.position.x = -45;	
+	cube.position.y = 52/2;	
+	cube.position.z = -77 - 6/2;	
+	scene.add( cube );
 	// right leg
-
+	cube = new THREE.Mesh(
+		new THREE.BoxGeometry( 64, 334+52, 6 ), cubeMaterial );
+	cube.position.x = 0;	
+	cube.position.y = (334+52)/2;
+	cube.position.z = -77 - 6/2;	// offset 77 + half of depth 6/2
+	scene.add( cube );
 }
 
 // Body of the bird - body and the connector of body and head
 function createBody() {
     // Création du corps
     var body = new THREE.Mesh(
-        new THREE.SphereGeometry(104, 32, 16),
-        new THREE.MeshLambertMaterial({color: 0xA00000}) // Rouge
+        new THREE.SphereGeometry(116/2, 32, 16),
+        new THREE.MeshLambertMaterial({color: 0xA00000}) 
     );
     body.position.set(0, 160, 0);
     scene.add(body);
 
-    // Création du connecteur corps-tête (pour simplifier, on peut utiliser un petit cylindre)
     var neck = new THREE.Mesh(
-        new THREE.CylinderGeometry(24, 24, 50, 32),
-        new THREE.MeshLambertMaterial({color: 0x0000D0}) // Bleu
+        new THREE.CylinderGeometry(24, 24, 390, 32),
+        new THREE.MeshLambertMaterial({color: 0x0000D0}) 
     );
-    neck.position.set(0, 300, 0);
+    neck.position.set(0, 390/2+160, 0);
     scene.add(neck);
 }
 
 function createHead() {
     // Création de la tête
     var head = new THREE.Mesh(
-        new THREE.SphereGeometry(52, 32, 16),
+        new THREE.SphereGeometry(104/2, 32, 16),
         new THREE.MeshLambertMaterial({color: 0xA00000}) // Rouge
     );
-    head.position.set(0, 350, 0);
+    head.position.set(0, 160+390, 0);
     scene.add(head);
 
     // Création du chapeau
     var hat = new THREE.Mesh(
-        new THREE.CylinderGeometry(70, 70, 70, 32),
+        new THREE.CylinderGeometry(142/2, 142/2, 10, 32),
         new THREE.MeshLambertMaterial({color: 0x0000D0}) // Bleu
     );
-    hat.position.set(0, 420, 0);
+    hat.position.set(0, (160+390+104/2)-10, 0);
+    scene.add(hat);
+	var hat = new THREE.Mesh(
+        new THREE.CylinderGeometry(80/2, 80/2, 70, 32),
+        new THREE.MeshLambertMaterial({color: 0x0000D0}) // Bleu
+    );
+    hat.position.set(0, 160+390+104/2+20, 0);
     scene.add(hat);
 }
 
@@ -161,21 +178,21 @@ function fillScene() {
 	scene.add(light);
 	scene.add(light2);
 
-	if (ground) {
-		Coordinates.drawGround({size:1000});
-	}
-	if (gridX) {
-		Coordinates.drawGrid({size:1000,scale:0.01});
-	}
-	if (gridY) {
-		Coordinates.drawGrid({size:1000,scale:0.01, orientation:"y"});
-	}
-	if (gridZ) {
-		Coordinates.drawGrid({size:1000,scale:0.01, orientation:"z"});
-	}
-	if (axes) {
-		Coordinates.drawAllAxes({axisLength:300,axisRadius:2,axisTess:50});
-	}
+	// if (ground) {
+	// 	Coordinates.drawGround({size:1000});
+	// }
+	// if (gridX) {
+	// 	Coordinates.drawGrid({size:1000,scale:0.01});
+	// }
+	// if (gridY) {
+	// 	Coordinates.drawGrid({size:1000,scale:0.01, orientation:"y"});
+	// }
+	// if (gridZ) {
+	// 	Coordinates.drawGrid({size:1000,scale:0.01, orientation:"z"});
+	// }
+	// if (axes) {
+	// 	Coordinates.drawAllAxes({axisLength:300,axisRadius:2,axisTess:50});
+	// }
 	createDrinkingBird();
 }
 //
@@ -226,6 +243,7 @@ function setupGui() {
 	gui.add( effectController, "newGridZ" ).name("Show XY grid");
 	gui.add( effectController, "newGround" ).name("Show ground");
 	gui.add( effectController, "newAxes" ).name("Show axes");
+
 }
 
 try {
@@ -234,6 +252,4 @@ try {
 	addToDOM();
 	animate();
 } catch(e) {
-	var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
-	$('#container').append(errorReport+e);
 }
