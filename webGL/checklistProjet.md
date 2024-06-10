@@ -1,20 +1,20 @@
-- [ ] Esthetisme
-- [ ] Mise en page de la page web
-- [ ] Paragraphe(s) d'explications techniques
-- [ ] Légèreté du dossier (<2Mo)
-- [ ] Géométrie
+- [X] Esthetisme
+- [X] Mise en page de la page web
+- [X] Paragraphe(s) d'explications techniques
+- [X] Légèreté du dossier (<2Mo)
+- [X] Géométrie
 - [ ] Couleur
 - [ ] Transparence
 - [X] Eclairage
 - [ ] Ombres portées
 - [X] Position de la caméra
 - [ ] Brouillard
-- [ ] Effet miroir
+- [X] Effet miroir
 - [X] Texture classique
 - [ ] Texture avec transparence
-- [ ] Sprites
+- [X] Sprites
 - [X] Environment map
 - [X] Skybox
 - [ ] specular maps
 - [ ] normal maps
-- [ ] Interaction par GUI
+- [X] Interaction par GUI
