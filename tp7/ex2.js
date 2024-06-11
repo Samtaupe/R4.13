@@ -4,6 +4,7 @@ import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import {dat} from "./lib/dat.gui.min.js";
 window.scene = new THREE.Scene();
 import {Coordinates} from "./lib/Coordinates.js";
+
 var camera, scene, renderer;
 var cameraControls;
 "use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
