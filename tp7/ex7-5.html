@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>TP - Eclairage</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+        .centre{text-align: center;}
+    </style>
+</head>
+<body>
+    <!-- API importé du site de Three.js -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://threejs.org/build/three.module.js",
+            "three/addons/": "https://threejs.org/examples/jsm/"
+        }
+    }
+    </script>
+    <!-- Un titre centré -->
+    <h1 class="centre"> TP 3 - Modelisation </h1>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <!-- Pour mettre le rendu Web GL centré -->
+    <div id="webGL" class="centre"></div>
+
+    <!-- Mon script avec un chemin relatif -->
+    <script  type='module'>
+        "use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
+        /*global THREE, Coordinates, $, document, window, dat*/
+        import * as THREE from "three";
+        import {OBJLoader} from "three/addons/loaders/OBJLoader.js";
+        import {OrbitControls} from "three/addons/controls/OrbitControls.js";
+        import {dat} from "./lib/dat.gui.min.js";
+        import {Coordinates} from "./lib/Coordinates.js";
+
+
+        let camera, renderer;
+        let cameraControls;
+        const clock = new THREE.Clock();
+        const teapotSize = 50;
+
+        import { TeapotGeometry } from '/../TeapotGeometry.js';
+
+        function createMaterial() {
+            // MATERIALS
+            // Student: use the texture 'textures/water.jpg'
+            const material = new THREE.MeshPhongMaterial({shininess: 50});
+            material.color.setHSL( 0.09, 0.46, 0.2 );
+            material.specular.setHSL( 0.09, 0.46, 1.0 );
+            material.specularMap = new THREE.TextureLoader().load('/../textures/cracked_n.png');
+            material.normalMap = new THREE.TextureLoader().load('/../textures/cracked_n.png');
+            return material;
+        }
+
+        function fillScene() {
+            window.scene = new THREE.Scene();
+            // LIGHTS
+            window.scene.add( new THREE.AmbientLight( 0x333333 ) );
+            let light = new THREE.DirectionalLight(0xFFFFFF, 0.9);
+            light.position.set( 200, 300, 500 );
+            window.scene.add( light );
+            light = new THREE.DirectionalLight( 0xFFFFFF, 0.7 );
+            light.position.set( -200, -100, -400 );
+            window.scene.add( light );
+
+            const material = createMaterial();
+            const teapot = new THREE.Mesh(
+                new TeapotGeometry(teapotSize,10,true,true,true,false,true),
+                material);
+            window.scene.add( teapot );
+        }
+
+        function init() {
+            const canvasWidth = 846;
+            const canvasHeight = 494;
+            // For grading the window is fixed in size; here's general code:
+            //var canvasWidth = window.innerWidth;
+            //var canvasHeight = window.innerHeight;
+
+            // CAMERA
+
+            camera = new THREE.PerspectiveCamera( 45, canvasWidth/ canvasHeight, 100, 20000 );
+            camera.position.set( -222, 494, 1746 );
+
+            // RENDERER
+
+            renderer = new THREE.WebGLRenderer( { antialias: true } );
+            renderer.setSize( canvasWidth, canvasHeight );
+            renderer.setClearColor( 0xAAAAAA, 1.0 );
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true;
+
+            // CONTROLS
+            cameraControls = new OrbitControls( camera, renderer.domElement );
+            cameraControls.target.set(0, -160, 0);
+
+        }
+
+        function addToDOM() {
+            const container = document.getElementById('webGL');
+            const canvas = container.getElementsByTagName('canvas');
+            if (canvas.length>0) {
+                container.removeChild(canvas[0]);
+            }
+            container.appendChild( renderer.domElement );
+        }
+
+        function animate() {
+
+            requestAnimationFrame( animate );
+            render();
+
+        }
+
+        function render() {
+            const delta = clock.getDelta();
+            cameraControls.update( delta );
+
+            renderer.render( window.scene, camera );
+        }
+
+        try {
+            init();
+            fillScene();
+            addToDOM();
+            animate();
+        } catch (e) {
+            const errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
+            $('#webGL').append(errorReport + e.stack);
+        }
+
+
+
+        
+
+    </script>
+
+    <div id="container" onclick="this.focus();"></div>
+    <div id="grading"></div>
+    <p class="centre"> Exercice 7.5 </p>
+    <a href="ex7-6.html">ex7-6</a>
+</body>
+</html>

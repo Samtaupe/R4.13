@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset=utf-8>
+    <title>TP - Eclairage</title>
+    <style>
+        body { margin: 0; }
+        canvas { width: 100%; height: 100% }
+        .centre{text-align: center;}
+    </style>
+</head>
+<body>
+    <!-- API importé du site de Three.js -->
+    <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://threejs.org/build/three.module.js",
+            "three/addons/": "https://threejs.org/examples/jsm/"
+        }
+    }
+    </script>
+    <!-- Un titre centré -->
+    <h1 class="centre"> TP 3 - Modelisation </h1>
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+
+    <script type="module" src="TeapotGeometry.js"></script>
+    <script type="text/x-glsl" id="vertex">
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        varying vec3 vModelPosition;
+
+        void main() {
+            gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+            vNormal = normalize( normalMatrix * normal );
+            vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );
+            vViewPosition = -mvPosition.xyz;
+            vModelPosition = position;
+        }
+    </script>
+    <script type="text/x-glsl" id="fragment">
+        uniform vec3 uMaterialColor;
+
+        uniform vec3 uDirLightPos;
+        uniform vec3 uDirLightColor;
+
+        uniform float uKd;
+        uniform float uScale;
+        uniform float uScaleX;
+        uniform float uScaleY;
+        uniform float uScaleZ;
+
+        varying vec3 vNormal;
+        varying vec3 vViewPosition;
+        varying vec3 vModelPosition;
+
+        void main() {
+            // compute direction to light
+            vec4 lDirection = viewMatrix * vec4( uDirLightPos, 0.0 );
+            vec3 lVector = normalize( lDirection.xyz );
+
+            // diffuse: N * L. Normal must be normalized, since it's interpolated.
+            vec3 normal = normalize( vNormal );
+
+            float diffuse = max( dot( normal, lVector ), 0.0);
+
+            // Student: use the vModelPosition as an input to a function and
+            // then multiply the diffuse contribution by this amount.
+            diffuse = 0.5 + 0.5 * sin(uScaleX * vModelPosition.x) * sin(uScaleY * vModelPosition.y) * sin(uScaleZ * vModelPosition.z);
+
+            gl_FragColor = vec4( uKd * uMaterialColor * uDirLightColor * diffuse, 1.0 );
+        }
+    </script>
+
+
+    <!-- Pour mettre le rendu Web GL centré -->
+    <div id="webGL" class="centre"></div>
+
+    <!-- Mon script avec un chemin relatif -->
+    <script  type='module'>
+        "use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
+        ////////////////////////////////////////////////////////////////////////////////
+        // Procedural texturing
+        // Your task is to change the fragment shader, and only that
+        // Edit the file named fragment.glsl in the tab above.
+        ////////////////////////////////////////////////////////////////////////////////
+        /*global THREE, document, window, dat, $*/
+        import * as THREE from 'three';
+
+        import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import {dat} from './lib/dat.gui.min.js';
+
+        import {Coordinates} from './lib/Coordinates.js';
+
+        import { TeapotGeometry } from 'three/addons/geometries/TeapotGeometry.js';
+
+        var camera, scene, renderer, light;
+        var cameraControls, effectController, phongMaterial;
+        var clock = new THREE.Clock();
+
+        function fillScene() {
+            scene = new THREE.Scene();
+            scene.fog = new THREE.Fog( 0xAAAAAA, 2000, 4000 );
+
+            // LIGHTS
+            var ambientLight = new THREE.AmbientLight(0x333333); // 0.2
+
+            light = new THREE.DirectionalLight(0xFFFFFF, 1.0);
+            light.position.set(320, 390, 700);
+
+            scene.add(ambientLight);
+            scene.add(light);
+
+            var teapotSize = 400;
+            var materialColor = new THREE.Color();
+            materialColor.setRGB(1.0, 0.8, 0.6);
+
+            phongMaterial = createShaderMaterial("phongDiffuse", light);
+            phongMaterial.uniforms.uMaterialColor.value.copy(materialColor);
+            phongMaterial.side = THREE.DoubleSide;
+
+            var teapot = new THREE.Mesh(
+                new TeapotGeometry(teapotSize, 20, true, true, true, true), phongMaterial);
+
+            scene.add(teapot);
+        }
+
+
+        function init() {
+            var canvasWidth = 846;
+            var canvasHeight = 494;
+            // For grading the window is fixed in size; here's general code:
+            //var canvasWidth = window.innerWidth;
+            //var canvasHeight = window.innerHeight;
+            var canvasRatio = canvasWidth / canvasHeight;
+
+            // RENDERER
+            renderer = new THREE.WebGLRenderer( { antialias: true } );
+            renderer.gammaInput = true;
+            renderer.gammaOutput = true;
+            renderer.setSize(canvasWidth, canvasHeight);
+            renderer.setClearColor( 0xAAAAAA, 1.0 );
+
+            // CAMERA
+            camera = new THREE.PerspectiveCamera( 45, canvasRatio, 1, 80000 );
+            camera.position.set(-600, 900, 1300);
+            // CONTROLS
+            cameraControls = new OrbitControls(camera, renderer.domElement);
+            cameraControls.target.set(0, 0, 0);
+        }
+
+        function addToDOM() {
+            var container = document.getElementById('container');
+            var canvas = container.getElementsByTagName('canvas');
+            if (canvas.length>0) {
+                container.removeChild(canvas[0]);
+            }
+            container.appendChild( renderer.domElement );
+        }
+
+        function animate() {
+            window.requestAnimationFrame(animate);
+            render();
+        }
+
+        function render() {
+            var delta = clock.getDelta();
+            cameraControls.update(delta);
+
+            // take inputs from sliders and modify shader's values
+            phongMaterial.uniforms.uKd.value = effectController.kd;
+            phongMaterial.uniforms.uScale.value = effectController.scale;
+            phongMaterial.uniforms.uScaleX.value = effectController.scaleX;
+            phongMaterial.uniforms.uScaleY.value = effectController.scaleY;
+            phongMaterial.uniforms.uScaleZ.value = effectController.scaleZ;
+            
+
+            var materialColor = new THREE.Color();
+            materialColor.setHSL(effectController.hue, effectController.saturation, effectController.lightness);
+            phongMaterial.uniforms.uMaterialColor.value.copy(materialColor);
+
+            light.position.set(effectController.lx, effectController.ly, effectController.lz);
+
+            light.color.setHSL(effectController.lhue, effectController.lsaturation, effectController.llightness);
+
+            renderer.render(scene, camera);
+        }
+
+        function loadShader(shadertype) {
+            return document.getElementById(shadertype).textContent;
+        }
+
+        function createShaderMaterial(id, light) {
+
+            // could be a global, defined once, but here for convenience
+            var shaderTypes = {
+                'phongDiffuse' : {
+
+                    uniforms: {
+
+                        "uDirLightPos":	{ type: "v3", value: new THREE.Vector3() },
+                        "uDirLightColor": { type: "c", value: new THREE.Color( 0xFFFFFF ) },
+
+                        "uMaterialColor": { type: "c", value: new THREE.Color( 0xFFFFFF ) },
+
+                        uKd: {
+                            type: "f",
+                            value: 0.7
+                        },
+                        uScale: {
+                            type: "f",
+                            value: 0.2
+                        },
+                        uScaleX: {
+                            type: "f",
+                            value: 0.2
+                        },
+                        uScaleY: {
+                            type: "f",
+                            value: 0.2
+                        },
+                        uScaleZ: {
+                            type: "f",
+                            value: 0.2
+                        },
+                    }
+                }
+            };
+
+            var shader = shaderTypes[id];
+
+            var u = THREE.UniformsUtils.clone(shader.uniforms);
+
+            // this line will load a shader that has an id of "vertex" from the .html file
+            var vs = loadShader("vertex");
+            // this line will load a shader that has an id of "fragment" from the .html file
+            var fs = loadShader("fragment");
+
+            var material = new THREE.ShaderMaterial({ uniforms: u, vertexShader: vs, fragmentShader: fs });
+
+            material.uniforms.uDirLightPos.value = light.position;
+            material.uniforms.uDirLightColor.value = light.color;
+
+            return material;
+
+        }
+
+        function setupGui() {
+
+            effectController = {
+
+                kd: 0.7,
+                scale: 0.2,
+                scaleX: 0.2,
+                scaleY: 0.2,
+                scaleZ: 0.2,
+
+                hue: 0.463,
+                saturation: 0.46,
+                lightness: 0.7,
+
+                lhue: 0.04,
+                lsaturation: 0.01,
+                llightness: 0.8,
+
+                // bizarrely, if you initialize these with negative numbers, the sliders
+                // will not show any decimal places.
+                lx: 0.32,
+                ly: 0.39,
+                lz: 0.7
+
+            };
+
+            var h;
+            var gui = new dat.GUI();
+
+            // material (attributes)
+            h = gui.addFolder("Material control");
+            h.add(effectController, "kd", 0.0, 1.0, 0.025).name("Kd");
+            h.add(effectController, "scale", 0.01, 1.0, 0.025).name("function scale");
+            h.add(effectController, "scaleX", 0.01, 1.0, 0.025).name("function scale X");
+            h.add(effectController, "scaleY", 0.01, 1.0, 0.025).name("function scale Y");
+            h.add(effectController, "scaleZ", 0.01, 1.0, 0.025).name("function scale Z");
+
+            // material (color)
+            h = gui.addFolder("Material color");
+            h.add(effectController, "hue", 0.0, 1.0, 0.025).name("hue");
+            h.add(effectController, "saturation", 0.0, 1.0, 0.025).name("saturation");
+            h.add(effectController, "lightness", 0.0, 1.0, 0.025).name("value");
+
+            // light (point)
+            h = gui.addFolder("Light color");
+            h.add(effectController, "lhue", 0.0, 1.0, 0.025).name("hue");
+            h.add(effectController, "lsaturation", 0.0, 1.0, 0.025).name("saturation");
+            h.add(effectController, "llightness", 0.0, 1.0, 0.025).name("lightness");
+
+            // light (directional)
+            h = gui.addFolder("Light direction");
+            h.add(effectController, "lx", -1.0, 1.0, 0.025).name("x");
+            h.add(effectController, "ly", -1.0, 1.0, 0.025).name("y");
+            h.add(effectController, "lz", -1.0, 1.0, 0.025).name("z");
+
+
+        }
+
+
+        // this is the main action sequence
+
+        try {
+            init();
+            fillScene();
+            setupGui();
+            addToDOM();
+            animate();
+        } catch(e) {
+            var errorReport = "Your program encountered an unrecoverable error, can not draw on canvas. Error was:<br/><br/>";
+            $('#container').append(errorReport+e);
+        }
+
+
+    </script>
+
+    <div id="container" onclick="this.focus();"></div>
+    <div id="grading"></div>
+    <p class="centre"> Exercice 8.2 </p>
+</body>
+</html>
