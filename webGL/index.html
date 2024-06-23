@@ -1,16 +1,88 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>WebGL24</title>
+  <title>Projet WebGL 2024</title>
   <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <h1 class="centre">Exemple</h1>
-  <a href="tableau.html">tableau</a>
-  <div id="webGL" class="centre"><canvas id="webGL-container"></canvas></div>
-  <img id="image" src="img.jpg" alt="Le Fils de l'Homme">
+  <h1>Projet WebGL 2024</h1>
+  <div class="presentation">
+    <h2>Présentation de l'œuvre</h2>
+    <img src="img.jpg" alt="Le fils de l'homme de René Magritte">
+    <p>
+      <i>Le fils de l'homme</i> est un célèbre tableau de l'artiste surréaliste belge René Magritte, peint en 1964. 
+      Le tableau représente un homme en costume avec un chapeau melon, dont le visage est en grande partie obscurci 
+      par une pomme verte flottant devant lui. Ce tableau est souvent interprété comme une exploration de la tension 
+      entre ce qui est visible et ce qui est caché, et il incarne parfaitement le style énigmatique et provocateur 
+      de Magritte.
+    </p>
+    <p>
+      René Magritte a expliqué qu'il voulait exprimer la capacité de l'art à dissimuler et révéler la vérité en même temps. 
+      La pomme verte, un fruit ordinaire, devient ici un élément perturbateur, empêchant le spectateur de voir le visage 
+      de l'homme. Ce jeu entre l'ordinaire et l'extraordinaire, le visible et l'invisible, est caractéristique de l'œuvre 
+      de Magritte, qui a toujours cherché à défier les perceptions et les attentes du spectateur.
+    </p>
+    <p>
+      <i>Le fils de l'homme</i> a inspiré de nombreuses interprétations et théories. Certains y voient une critique 
+      de la société bourgeoise et de ses conventions, d'autres une réflexion sur l'identité et l'anonymat. La juxtaposition 
+      de l'habit formel et de l'objet insolite crée un contraste saisissant qui attire et retient l'attention. 
+      Le tableau continue d'influencer la culture populaire et l'art contemporain, apparaissant dans des films, des livres 
+      et des expositions à travers le monde.
+    </p>
+  </div>
+  <h2>Explication technique</h2>
+  <ul>
+    <li><b>Légèreté du dossier :</b> Optimisation des fichiers pour maintenir la taille totale en dessous de 2 Mo. 
+      <br>Afin de respecté le critère de la Légèreté du dossier, il n'y a pas de texture pour l'homme car cela n'ayant pas trouvé de texture de costard peu détaillé, le fichier aurait dépassé les 2 Mo.
+    </li>
+    <li><b>Géométrie :</b> Utilisation de plusieurs géométries pour les objets de la scène. 
+      <br>Le visage de l'homme, la pomme, le costume et le fond sont tous modélisés avec des géométries distinctes pour une meilleure précision.
+    </li>
+    <li><b>Couleur :</b> Gestion des couleurs pour correspondre à l'éclairage. 
+      <br>Les couleurs des objets sont ajustées pour correspondre aux variations de lumière, en particulier pour la pomme verte et le costume noir.
+    </li>
+    <li><b>Transparence :</b> Application de matériaux transparents pour certains objets. 
+      <br>Les reflets et la transparence sont utilisés sur les objets en verre de la scène pour augmenter le réalisme.
+    </li>
+    <li><b>Éclairage :</b> Utilisation de lumières directionnelles et ambiantes. 
+      <br>Des lumières directionnelles simulent la lumière naturelle, tandis que des lumières ambiantes ajoutent une illumination générale douce.
+    </li>
+    <li><b>Ombres portées :</b> Implémentation d'ombres portées pour augmenter le réalisme. 
+      <br>Les ombres portées par la pomme et l'homme sont calculées pour correspondre à la direction de la lumière.
+    </li>
+    <li><b>Position de la caméra :</b> Contrôle dynamique de la caméra pour différentes perspectives. 
+      <br>La caméra peut être déplacée pour voir l'homme et la pomme sous différents angles, offrant une vue complète de la scène.
+    </li>
+    <li><b>Brouillard :</b> Application d'un effet de brouillard pour simuler des conditions atmosphériques. 
+      <br>Un léger effet de brouillard est ajouté pour créer une profondeur de champ et simuler une atmosphère brumeuse.
+    </li>
+    <li><b>Effet miroir :</b> Réalisation d'effets de réflexion sur l'eau. 
+      <br>Des surfaces réfléchissantes sont utilisées pour créer des effets de miroir, notamment sur des objets en verre ou des plans d'eau dans la scène.
+    </li>
+    <li><b>Texture classique :</b> Application de textures pour simuler divers matériaux. 
+      <br>Les textures sont appliquées aux objets comme le costume en tissu, la pomme, et les éléments du décor pour simuler différents matériaux.
+    </li>
+    <li><b>Texture avec transparence :</b> Utilisation de textures transparentes pour certains objets. 
+      <br>Les textures transparentes sont utilisées pour les objets nécessitant des détails de transparence comme des fenêtres ou des verres.
+    </li>
+    <li><b>Sprites :</b> Utilisation de sprites pour des éléments graphiques en 2D. 
+      <br>Des sprites 2D sont intégrés pour des effets spéciaux ou des éléments décoratifs supplémentaires.
+    </li>
+    <li><b>Environment map :</b> Utilisation de cartes environnementales pour les réflexions. 
+      <br>Les cartes environnementales sont appliquées pour simuler les réflexions réalistes sur les surfaces métalliques et les objets brillants.
+    </li>
+    <li><b>Skybox :</b> Utilisation d'une skybox pour simuler le ciel et l'horizon. 
+      <br>Une skybox haute résolution est utilisée pour créer un environnement de ciel réaliste autour de la scène.
+    </li>
+    <li><b>Normal maps :</b> Application de normal maps pour ajouter des détails de surface. 
+      <br>Les normal maps ajoutent des détails fins à la surface des objets, comme la texture du costume de l'homme et la peau de la pomme.
+    </li>
+    <li><b>Interaction par GUI :</b> Interface GUI pour modifier les paramètres de la scène en temps réel. 
+      <br>Une interface graphique permet de changer les paramètres de la scène tels que l'éclairage, la position de la caméra, et les propriétés des objets en temps réel.
+    </li>
+  </ul>
+  <div id="container"></div>
 
   <script async src="https://unpkg.com/es-module-shims@1.3.6/dist/es-module-shims.js"></script>
   <script type="importmap">
@@ -21,5 +93,6 @@
       }
     }
   </script>
+  <script type="module" src="script.js"></script>
 </body>
 </html>
